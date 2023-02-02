@@ -17,8 +17,10 @@ import org.testng.annotations.Test;
 import pom.AddNewAccount;
 import pom.AddNewCustomer;
 import pom.DeleteCustomer;
+import pom.EditAccount;
 import pom.EditCustomer;
 import pom.LoginPage;
+import utility.ExcelUtility;
 import utility.Utility;
 
 public class Start {
@@ -31,8 +33,9 @@ public class Start {
 	EditCustomer editCustomer;
 	DeleteCustomer deleteCustomer;
 	AddNewAccount addNewAccount;
+	EditAccount editAccount;
 	String CUSTOMERID = null;
-	String ACCOUNTID =null;
+	String ACCOUNTID = null;
 
 	@BeforeTest
 	private void prepareClassProperties() throws IOException {
@@ -51,6 +54,7 @@ public class Start {
 		editCustomer = new EditCustomer(driver);
 		deleteCustomer = new DeleteCustomer(driver);
 		addNewAccount = new AddNewAccount(driver);
+		editAccount = new EditAccount(driver);
 	}
 
 	@Test(priority = 1)
@@ -68,9 +72,9 @@ public class Start {
 	@Test(priority = 2)
 	private void login() throws InterruptedException {
 		// add username
-		login.userName.sendKeys("mngr381022");
+		login.userName.sendKeys(ExcelUtility.getUserName());
 		// add password
-		login.userPassword.sendKeys("jazabAn");
+		login.userPassword.sendKeys(ExcelUtility.getPassword());
 		// click login button
 		login.loginButton.click();
 		// take screenshot to verify login
@@ -171,7 +175,7 @@ public class Start {
 		Thread.sleep(3000);
 	}
 
-	@Test(priority = 6)
+	@Test(priority = 7)
 	private void deleteCustomer() throws InterruptedException {
 		// choose delete customer
 		deleteCustomer.deleteCustomer.click();
@@ -212,8 +216,24 @@ public class Start {
 		Assert.assertEquals(driver.getPageSource().contains("Account Generated Successfully!!!"), true);
 		// take screenshot to confirm add new account
 		Utility.captureScreenshot(driver, "confirmAddNewAccount");
-		//store AccountID
-		ACCOUNTID=driver.getCurrentUrl().toString().substring(driver.getCurrentUrl().toString().indexOf("?") + 5);
+		// store AccountID
+		ACCOUNTID = driver.getCurrentUrl().toString().substring(driver.getCurrentUrl().toString().indexOf("?") + 5);
+	}
+
+	@Test(priority = 6)
+	private void editAccount() throws InterruptedException {
+		// choose edit account
+		editAccount.chooseEditAccount.click();
+		// wait to page to load
+		Thread.sleep(3000);
+		// verify page opened correctly
+		Assert.assertEquals(driver.getPageSource().contains("Edit Account Form"), true);
+		// take screenshot of add account page
+		Utility.captureScreenshot(driver, "editAccountPage");
+		// send account ID
+		editAccount.accountNO.sendKeys(ACCOUNTID);
+		// click submit button
+		editAccount.submitButton.click();
 	}
 
 	@AfterTest
